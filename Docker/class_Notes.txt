@@ -1,0 +1,419 @@
+
+**********************
+Day 12 - 4th June 2024 
+**********************				
+
+	Containerization Using Docker ::::
+	
+	
+		- Used to deploy Micro-Service based Applications
+	
+	
+	Containerization ::
+	
+		It is a process of packing the application along with its dependencies
+		
+	Developers' Deployments Perspective ::
+	
+		- src_code 
+		
+		- build 
+		
+		- created artifacts 			mywebapp.war 
+		
+		- unit testing 
+		
+					-- mywebapp.war --> jdk11, tomcat8.5 == successful
+					
+				
+					Package (mywebapp.war,jdk11,tomcat8.5)	--> mywebappImg:v1.0 --> Application Image
+					
+					promote the image to container registry.
+					
+		
+		- promote the application to target environment (QA/UAT/PROD)
+		
+		QA Environment ::
+		
+					-- mywebapp.war --> jdk11, tomcat8.5 
+					
+					-- compatibility issue 
+	
+					mywebappImg:v1.0
+					
+	
+	Infra-Structure Perspective ::
+	
+		- Containerization are used to reduce the no. of VMs.
+		
+			Jenkins_Master_Node	--> Installed Jenkins 
+									Used to Create CICD Pipeline Jobs/Projects and Scheduled to run in slave nodes					
+				Jenkins_Slave_Node1 	Java Application 	- Build tool (maven) jdk11
+				Jenkins_Slave_Node1.1 	Java Application 	- Build tool (maven) jkd17
+				Jenkins_Slave_Node2 	Python		
+				Jenkins_Slave_Node3 	NodeJS
+				Jenkins_Slave_Node4 	NodeJS
+				Jenkins_Slave_Node5 	.Net		Wnds	
+
+
+			Using Containers ::
+			
+			
+			Jenkins_Master (VM)
+			
+				Jenkins_Slave Node (VM)
+					Container Engine 		# Used create and Manage containers
+						C1 		java 
+						C2		python 
+						C3		NodeJs
+						C4		Angular
+						C5		.net
+			
+		
+	Terminologies ::
+
+		Virtual Machine :
+		
+			- VMs are Hardware level virtualization 
+			
+			- VMs are created using Hypervisor 
+			
+			- VMs are basically used to run the Operating System 
+			
+			- VMs will continue to run and consume resources even if there is no active task/applications
+			
+			- VMs consume more space and time to start-up.
+					
+		Container :
+		
+			- Containers are the OS level Virtualization
+					- Namespace / Control Group 
+					- Completed Isolated
+
+			- Containers are created using Container-Engine
+			
+			- Containers are used to run the Applications/Tasks NOT just the Operating System.
+			
+			- Containers will immediately go to exit state, if there is no task/applications to run.
+			
+			- Just to free-up the resources 
+			
+			- It is faster and consume less volume compared to VMs
+			
+			
+		Images 				# Is a static file defines the properties(application & Dependencies) of the container 
+							# it composed of various layers created using Dockerfile Instructions
+							# Images are Non-Executable
+		
+		Container 			# These are created using Container Images 
+							# These are Executable entities of Container Image 
+		
+		Container Engine 	# Is used create Container Images, Containers and Manage the containers
+							# Docker Container Engine
+		
+		Container Registry 	# Is used to maintain the Container Images / Version control the images at enterprise level 
+							# dockerhub  - https://hub.docker.com/
+							AWS 	- ECS,ECR,EKS
+							Azure 	- ACS,ACR,AKS
+							GCP 	- GCE,GCR,GKE						
+		
+		Container Repository
+							# Is a sub-set of Container Registry
+		
+			
+		Version Control :
+		
+			Source_Code 	--> github 					*.java 
+			
+			Artifacts 		--> Jfrog Artifactory		*.war 
+			
+			Container Images -> dockerhub 				mywebappImg:v1.0
+			
+			
+		Working with Docker :::
+
+		Create dockerhub account 		
+		
+			QA_Server: 100 of services
+				Container Engine 
+					C1,2,3,4,5,6,7 - tomcat - run - *.war
+
+				 tomcat - 8080  *.war
+				 tomcat - 8085  *.war
+			 
+		Install Docker Engine 			https://docs.docker.com/engine/install/
+		
+			- In jenkins slave Node 
+			
+				sudo apt install docker.io -y
+				
+				docker --version 		
+			
+			docker cli 		# Command line utility to work with docker containers
+			
+				docker --version
+				
+				docker pull 		# used to just download the docker image from container registry to local machine 
+				
+				docker run 
+				
+
+***********************
+Day 13 - 5th June 2024 
+***********************	
+
+	Launch Linux Machine 	
+			- Build Environment will create application artifacts as well as Application Images.
+	
+		- Install Docker 
+		
+		- Use Docker Cli to interact with Docker Engine 
+		
+		- Misc. Docker CLI Commands
+		
+		- Working with existing images 
+		- Create Containers 
+		- Docker Port Mapping 
+		- Docker Volumes 
+		- Create new Images 
+		- Push the new images to Docker hub Registry
+		- Container Orchestration 
+			- Docker Compose 
+			- Docker Swarm 
+			- Kubernetes
+			
+
+		- Misc. Docker CLI Commands
+		
+		
+			docker images 					# List the Images in local machine 
+			
+			docker ps 						# List running containers in local machine
+			
+			docker ps -a 					# List all running and stopped containers in local machine
+			
+			docker pull centos				# Download latest version container image from container registry
+			
+			docker pull centos:centos7		# Download previous version container image from container registry using tag name
+l
+			docker run centos 				# Create/Run the Container 
+			
+			docker run centos sleep 20		# Create/Run the Container with run time command
+			
+			Container Execution/Run Modes :
+			
+				- Foreground/Attached Mode 				# Default
+				
+					docker run centos 
+			
+				- Background/Detached Mode
+				
+					docker run -d centos 
+					
+				- Interactive Mode 
+			
+					docker run -it <image_ID> bash 
+					
+					docker run -it centos bash 
+					exit
+					
+			docker start <container_id>					# Start the Container
+			
+			docker exec -it <contiainer_id> bash 		# Login to running container 
+			exit
+			
+			docker stop <container_id> 					# Stop the running Container
+			
+			docker history <image_name>					# Get the layers of Image
+		
+			docker inspect < >							# Get Complete details of any docker components like image/container/volume
+			
+			docker rmi	<image_id>
+			
+			docker rm <container_id>
+			
+			
+			Port Mapping/Binding :::
+			
+				Is used to expose the container applications to Internet 
+				
+				-p host_port:container_port
+				
+				docker run -it -p 8085:8080 tomcat:8.0
+				
+				
+			Docker Volume :::
+			
+			Containers --> Not a permanent Entity
+			
+			- Stateless Applications  	# will not have any trace of execution 
+			
+			- stateful Applications		# will leave some trace of execution - logs/report/artifacts
+			
+			Container Volume # Are used to maintain the Persistant Data through the flow of execution.
+
+			Using Container Volumes we can able to send input to Container as well as get output from container.
+			
+				3 - tier application Architecture ::
+				
+					Front-End Layer 			C1 	
+						
+					Application Layer 			C2 
+					
+					BackEnd(DBase) Layer		C3 
+			
+			
+  19  docker volume list
+   20  docker volume create jun5-vol1
+   21  docker volume list
+   22  docker volume inspect jun5-vol1
+   
+   docker run -it --mount source=jun5-vol1,destination=/jun5-vol centos bash
+   
+   
+	Create Container Image :::
+		
+		docker commit 		# Is used to create an Image using the existing container properties 
+		
+			docker commit <container_id> <new_Container_Image_Name>:tag
+		
+		
+				
+		Push the Images from Local Machine to Dockerhub Registry using docker cli.
+	
+			docker push <image_name>
+			
+			docker login -u loksaieta
+			
+			d3ewewwafwecawecawdcwdcasfewr3223e23ed32e213121212xE
+				
+			docker push <image_name>
+			
+			docker push loksaieta/myjavabuildimg1
+
+
+
+
+		docker build 		# Is used to create an Image from the scratch using Dockerfile
+		
+			docker build -t <new_Container_Image_Name>:tag .  # execute this command from the current dir for Dockerfile.
+			
+   13  apt install docker.io -y
+   14  docker --version
+   15  clear
+   16  docker images
+   17  docker ps
+   18  docker ps -a
+   19  docker pull centos
+   20  docker images
+   21  docker ps
+   22  docker ps -a
+   23  docker run centos
+   24  docker ps
+   25  docker ps -a
+   26  docker run centos sleep 20
+   27  clear
+   28  docker run centos sleep 20
+   29  asdf
+   30  clear
+   31  docker run -d centos sleep 20
+   32  docker ps
+   33  docker run -it centos bash
+   34  docker start 9560025c4acd
+   35  docker exec -it 9560025c4acd bash
+   36  docker stop 9560025c4acd
+   37  docker images
+   38  docker run alpine
+   39  docker ps -a
+   40  docker images
+   41  docker history alpine
+   42  docker history centos
+   43  docker inspect centos
+   44  docker images
+   45  docker ps -a
+   46  docker rm 5cccfa8e34d3
+   47  docker ps -a
+   48  docker run alpine
+   49  docker ps -a
+   50  docker run alpine
+   51  docker ps -a
+   52  docker rmi alpine
+   53  docker rm 2297f06052c6 c676d801231f
+   54  docker ps -a
+   55  docker rmi alpine
+   56  docker pull tomcat:8.0
+   57  docker images
+   58  docker run -it tomcat:8.0 bash
+   59  history
+
+   11  docker ps
+   12  docker ps -a
+   13  docker ps
+   14  docker ps -ps
+   15  docker ps -a
+   16  docker ps
+   17  docker ps -a
+   18  docker run -it -p 8085:8080 tomcat:8.0
+   19  history
+
+   11  docker ps
+   12  docker run -it -p 8080:8080 tomcat:8.0
+   13  history
+
+   11  docker ps
+   12  docker run -it -p 8085:8080 tomcat:8.0
+   13  docker ps -a
+   14  docker ps
+   15  docker stop 8ec396ba032f a74b8415ae69 c1fa90310084
+   16  clear
+   17  docker ps
+   18  docker volumr list
+   19  docker volume list
+   20  docker volume create jun5-vol1
+   21  docker volume list
+   22  docker volume inspect jun5-vol1
+   23  cd /var/lib/docker/volumes/
+   24  ls
+   25  cd jun5-vol1/
+   26  ls
+   27  cd _data/
+   28  pwd
+   29  ls
+   30  docker run -it centos bash
+   31  docker run -it --mount source=jun5-vol1 destination=/jun5-vol centos bash
+   32  docker run -it --mount source=jun5-vol1,destination=/jun5-vol centos bash
+   33  ls
+   34  echo "rec1" >> hostfile1.txt
+   35  ls
+   36  echo "rec1" >> hostfile2.txt
+   37  ls
+   38  docker run -it --mount source=jun5-vol1,destination=/jun5-vol centos bash
+   39  docker volume inspect jun5-vol1
+   40  history
+   41  cd ~
+   42  dockerimages
+   43  docker images
+   44  docker run -it debian
+   45  docker ps
+   46  docker ps -a
+   47  docker start 7512ee782a6f
+   48  docker exec -it 7512ee782a6f bash
+   49  docker ps -a
+   50  docker images
+   51  docker commit 7512ee782a6f myjavabuildimg
+   52  docker images
+   53  docker run -it myjavabuildimg bash
+   54  docker commit 7512ee782a6f loksaieta/myjavabuildimg1
+   55  docker images
+   56  docker login  -u loksaieta
+   57  docker login -u loksaieta
+   58  docker push loksaieta/myjavabuildimg1
+   59  history
+
+
+Next :
+
+	Docker Build 
+	
+	Container Orchestration Tool 				
+			
